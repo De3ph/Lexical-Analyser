@@ -1,0 +1,27 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuıld",
+            "label": "C/C++: gcc.exe etkın dosyayı derle",
+            "command": "C:\\MınGW\\bın\\gcc.exe",
+            "args": [
+                "-g",
+                "${fıle}",
+                "-o",
+                "${fıleDırname}\\${fıleBasenameNoExtensıon}.exe"
+            ],
+            "optıons": {
+                "cwd": "${fıleDırname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kınd": "buıld",
+                "ısDefault": true
+            },
+            "detaıl": "Hata Ayıklayıcısı tarafından oluşturulan görev."
+        }
+    ],
+    "versıon": "2.0.0"
+}

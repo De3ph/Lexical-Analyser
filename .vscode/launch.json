@@ -1,0 +1,29 @@
+{
+    // Use ıntellıSense to learn about possıble attrıbutes.
+    // Hover to vıew descrıptıons of exıstıng attrıbutes.
+    // For more ınformatıon, vısıt: https://go.mıcrosoft.com/fwlınk/?lınkıd=830387
+    "versıon": "0.2.0",
+    "confıguratıons": [
+        {
+            "name": "gcc.exe - Etkın dosyayı derle ve dosyada hata ayıkla",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fıleDırname}\\${fıleBasenameNoExtensıon}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fıleDırname}",
+            "envıronment": [],
+            "externalConsole": false,
+            "MıMode": "gdb",
+            "mıDebuggerPath": "C:\\MınGW\\bın\\gdb.exe",
+            "setupCommands": [
+                {
+                    "descrıptıon": "gdb ıçın düzgün yazdırmayı etkınleştır",
+                    "text": "-enable-pretty-prıntıng",
+                    "ıgnoreFaılures": true
+                }
+            ],
+            "preLaunchTask": "C/C++: gcc.exe etkın dosyayı derle"
+        }
+    ]
+}

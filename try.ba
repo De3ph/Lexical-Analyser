@@ -1,8 +1,8 @@
-int size.
-int sum.
-move 5 to size.
-loop size times {ignore me, I am a comment}
-[ out size, newline.
-add size to sum.
+ınt sıze.
+ınt sum.
+move 5 to sıze.
+loop sıze tımes {ıgnore me, ı am a comment}
+[ out sıze, newlıne.
+add sıze to sum.
 ]
-out newline, "Sum:", sum.
+out newlıne, "Sum:", sum.
