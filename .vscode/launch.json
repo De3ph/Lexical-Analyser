@@ -1,29 +1,29 @@
 {
-    // Use ıntellıSense to learn about possıble attrıbutes.
-    // Hover to vıew descrıptıons of exıstıng attrıbutes.
-    // For more ınformatıon, vısıt: https://go.mıcrosoft.com/fwlınk/?lınkıd=830387
-    "versıon": "0.2.0",
-    "confıguratıons": [
+    // Use intelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
         {
-            "name": "gcc.exe - Etkın dosyayı derle ve dosyada hata ayıkla",
+            "name": "gcc.exe - Etkin dosyayi derle ve dosyada hata ayikla",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${fıleDırname}\\${fıleBasenameNoExtensıon}.exe",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${fıleDırname}",
-            "envıronment": [],
+            "cwd": "${fileDirname}",
+            "environment": [],
             "externalConsole": false,
-            "MıMode": "gdb",
-            "mıDebuggerPath": "C:\\MınGW\\bın\\gdb.exe",
+            "MiMode": "gdb",
+            "miDebuggerPath": "C:\\MinGW\\bin\\gdb.exe",
             "setupCommands": [
                 {
-                    "descrıptıon": "gdb ıçın düzgün yazdırmayı etkınleştır",
-                    "text": "-enable-pretty-prıntıng",
-                    "ıgnoreFaılures": true
+                    "description": "gdb için düzgün yazdirmayi etkinleştir",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: gcc.exe etkın dosyayı derle"
+            "preLaunchTask": "C/C++: gcc.exe etkin dosyayi derle"
         }
     ]
 }

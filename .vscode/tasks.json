@@ -1,27 +1,27 @@
 {
     "tasks": [
         {
-            "type": "cppbuıld",
-            "label": "C/C++: gcc.exe etkın dosyayı derle",
-            "command": "C:\\MınGW\\bın\\gcc.exe",
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe etkin dosyayi derle",
+            "command": "C:\\MinGW\\bin\\gcc.exe",
             "args": [
                 "-g",
-                "${fıle}",
+                "${file}",
                 "-o",
-                "${fıleDırname}\\${fıleBasenameNoExtensıon}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
-            "optıons": {
-                "cwd": "${fıleDırname}"
+            "options": {
+                "cwd": "${fileDirname}"
             },
             "problemMatcher": [
                 "$gcc"
             ],
             "group": {
-                "kınd": "buıld",
-                "ısDefault": true
+                "kind": "build",
+                "isDefault": true
             },
-            "detaıl": "Hata Ayıklayıcısı tarafından oluşturulan görev."
+            "detail": "Hata Ayiklayicisi tarafindan oluşturulan görev."
         }
     ],
-    "versıon": "2.0.0"
+    "version": "2.0.0"
 }
