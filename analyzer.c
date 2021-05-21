@@ -77,18 +77,3 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
 
     return 0;
 }
-
-/*
-int isValidEnd(char lastChar){
-    // eğer en sonda nokta yoksa hatali statement
-    if (lastChar == ENDOFLINE)
-    {
-        return 1;
-    }
-    else
-    {
-        return 0;
-    }
-    
-}
-*/
