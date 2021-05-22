@@ -15,26 +15,18 @@ void isValidEnd(char lastChar)
     }
 }
 
-// hata var
-/*
-char kelimelere_bol(char *satir)
-{
-    const char ayirici[] = " ";
-    static char kelimeler[20][20];
-    int kelime_sayisi = 0;
-
-    char *token = strtok(satir, ayirici);
-    strcpy(kelimeler[kelime_sayisi], token);
-    kelime_sayisi++;
-
-    while (token != NULL)
+int isKeyword(char *kelime){
+    int flag = 0;
+    for (int i = 0; i < 9; i++)
     {
-        strcpy(kelimeler[kelime_sayisi], token);
-        kelime_sayisi++;
+        if (strcmp(kelime,KEYWORDS[i])==0)
+        {
+            flag = 1;
+        }
     }
-    return kelimeler;
+    return flag;
 }
-*/
+
 int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yariyor
 {
 
@@ -67,13 +59,20 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
 
         while (token != NULL)
         {
+            if (isKeyword(token)==1)
+            {
+                printf("%s %s\n","Keyword",token);
+            }
+            else
+            {
+                printf("%s\n", token);
+            }
             
-            printf("%s\n", token);
-
             token = strtok(NULL, ayirici);
         }
         anlik_satir++;
     }
+
 
     return 0;
 }
