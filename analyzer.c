@@ -72,6 +72,17 @@ bool isCloseBlock(char karakter){
     }
 }
 
+bool isStringConstant(char *karakter){
+    if (karakter[0]== '"' && karakter[strlen(karakter)-1]=='"')
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
+    
+}
+
 void deleteComments(char *satir){
     
     int index1 = strcspn(satir,"{");
@@ -112,11 +123,25 @@ void splitDot(char *satir){
 }
 
 void splitComma(char *satir){
-    int dotIndex = strcspn(satir,",");
-    if (dotIndex < strlen(satir))
+    int commaIndex = strcspn(satir,",");
+    if (commaIndex < strlen(satir))
     {
-        satir[dotIndex] = '\0';
-        strcat(satir," ,");
+        char first[commaIndex+1];
+        for (int i = 0; i < commaIndex; i++)
+        {
+            first[i] = satir[i];
+        }
+        
+        char last[strlen(satir)-commaIndex+1];
+        for (int j = 0; j < strlen(satir)-commaIndex; j++)
+        {
+            last[j] = satir[j];
+        }
+        
+        strcat(first," ,");
+        strcat(first,last);
+        
+        satir = first;
     }
     else
     {
@@ -177,13 +202,19 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
             
             else if (isOpenBlock(*token))
             {
-                printf("%s\n","Open Block");
+                printf("%s\n","OpenBlock");
             }
             
             else if (isCloseBlock(*token))
             {
-                printf("%s\n","Close Block");
+                printf("%s\n","CloseBlock");
             }
+
+            else if (isStringConstant(token))
+            {
+                printf("%s %s\n","String Constant",token);
+            }
+            
             
             else
             {
