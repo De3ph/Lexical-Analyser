@@ -10,6 +10,10 @@ const char CLOSEBLOCK = ']';
 
 char *KEYWORDS[9] = {"int", "move", "to", "loop", "times", "out", "newline", "add", "sub"};
 
+char IdentifierNameList[100][20] = { "temp" };
+int identifierOrder = 0;
+
+
 void isValidEnd(char lastChar)
 {
     // eğer en sonda nokta yoksa hatali statement
@@ -21,7 +25,7 @@ void isValidEnd(char lastChar)
 }
 
 bool isKeyword(char *kelime){
-    int flag = false;
+    bool flag = false;
     for (int i = 0; i < 9; i++)
     {
         if (strcmp(kelime,KEYWORDS[i])==0)
@@ -83,6 +87,50 @@ bool isStringConstant(char *karakter){
     
 }
 
+bool isIntConstant(char *karakter){
+    int temp_int = atoi(karakter);
+    if (temp_int != 0)
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
+    
+}
+
+bool isInIdentifierList(char *kelime){
+    bool flag = false;
+    for (int i = 0; i < strlen(*IdentifierNameList); i++)
+    {
+        if (strcmp(kelime, IdentifierNameList[i])==0)
+        {
+            flag  = true;
+        }
+    }
+    return flag;
+}
+
+bool isIdentifier(char *karakter , char *lastToken){
+    bool isInList = isInIdentifierList(karakter);
+    bool isValid = ( (strcmp(lastToken,"int")==0 || strcmp(lastToken,"to")==0 || strcmp(lastToken,"from")==0) && (strlen(karakter) <= 20) ) ? true:false;
+    if (isInList)
+    {
+        return true;
+    }
+    else if (isValid)
+    {
+        strcpy(IdentifierNameList[identifierOrder],karakter);
+        identifierOrder++;
+        return true;
+    }
+    
+    else{
+        return false;
+    }
+    
+}
+
 void deleteComments(char *satir){
     
     int index1 = strcspn(satir,"{");
@@ -122,6 +170,7 @@ void splitDot(char *satir){
     }
 }
 
+// çalışmıyor
 void splitComma(char *satir){
     int commaIndex = strcspn(satir,",");
     if (commaIndex < strlen(satir))
@@ -133,9 +182,9 @@ void splitComma(char *satir){
         }
         
         char last[strlen(satir)-commaIndex+1];
-        for (int j = 0; j < strlen(satir)-commaIndex; j++)
+        for (int j = commaIndex; j < strlen(satir)-commaIndex; j++)
         {
-            last[j] = satir[j];
+            last[j-commaIndex] = satir[j];
         }
         
         strcat(first," ,");
@@ -152,22 +201,26 @@ void splitComma(char *satir){
 int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yariyor
 {
 
-    char *filePath = argv[1];
+    char *SourcefilePath = argv[1];
     char satir[150];
     int satir_sayisi = 0;
     char satirlar[150][150];
 
-    FILE *file = fopen(filePath, "r");
-    if (file == NULL)
+    // okunacak dosya
+    FILE *sourceFile = fopen(SourcefilePath, "r");
+    if (sourceFile == NULL)
     {
         printf("%s", "Dosya dizinde bulunamadi.");
         exit(0);
     }
 
+    // yazılacak dosya
+    FILE *destFile = fopen("myscript.lx","w");
+
     // satırları tek tek alan döngü
-    while (!feof(file))
+    while (!feof(sourceFile))
     {
-        fgets(satir, 150, file);
+        fgets(satir, 150, sourceFile);
         deleteComments(satir); //yorum bulunuyorsa satırda siliyor
         splitDot(satir); // sondaki yapışık noktaları da token alması için noktanın öncesine boşluk ekliyor
         splitComma(satir); // seperator olarak tanıması için virgülleri ayırıyor
@@ -176,6 +229,7 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
     }
 
     int anlik_satir = 0;
+    char lastToken[] = "";
 
     // satırları kelimelerine ayırıyor
     while (anlik_satir <= satir_sayisi)
@@ -186,45 +240,59 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
 
         while (token != NULL)
         {
+            printf("|||%s----%s|||\n",lastToken,token);
+
             if (isKeyword(token))
             {
-                printf("%s %s\n","Keyword",token);
+                fprintf(destFile,"%s %s\n","Keyword",token);
             }
             else if (isEndofline(*token))
             {
-                printf("%s\n","Endofline");
+                fprintf(destFile,"%s\n","Endofline");
             }
 
             else if (isSeperator(*token))
             {
-                printf("%s\n","Seperator");
+                fprintf(destFile,"%s\n","Seperator");
             }
             
             else if (isOpenBlock(*token))
             {
-                printf("%s\n","OpenBlock");
+                fprintf(destFile,"%s\n","OpenBlock");
             }
             
             else if (isCloseBlock(*token))
             {
-                printf("%s\n","CloseBlock");
+                fprintf(destFile,"%s\n","CloseBlock");
             }
 
             else if (isStringConstant(token))
             {
-                printf("%s %s\n","String Constant",token);
+                fprintf(destFile,"%s %s\n","String Constant",token);
             }
-            
-            
+
+            else if (isIntConstant(token))
+            {
+                fprintf(destFile,"%s %s\n","IntConstant",token);
+            }
+
+            else if (isIdentifier(token,lastToken))
+            {
+                fprintf(destFile,"%s %s\n","Identifier",token);
+            }
+     
             else
             {
-                printf("%s\n", token);
+                fprintf(destFile,"%s\n", token);
             }
-            
+
+            strcpy(lastToken,token);
             token = strtok(NULL, ayirici);
         }
         anlik_satir++;
     }
     
+    fclose(sourceFile);
+    fclose(destFile);
     return 0;
 }
