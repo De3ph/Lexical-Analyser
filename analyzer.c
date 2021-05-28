@@ -547,7 +547,6 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                     exit(1);
                 }
 
-
                 // line or code block
                 
 
