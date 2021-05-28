@@ -1,8 +1,4 @@
 int size.
 int sum.
 move 5 to size.
-loop size times {ignore me, i am a comment}
-[ out size, newline.
-add size to sum.
-]
 out newline, "Sum:", sum.
