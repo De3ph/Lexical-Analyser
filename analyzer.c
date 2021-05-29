@@ -9,7 +9,7 @@ const char SEPERATOR[] = "Seperator";
 const char OPENBLOCK = '[';
 const char CLOSEBLOCK = ']';
 
-char *KEYWORDS[9] = {"int", "move", "to", "loop", "times", "out", "newline", "add", "sub"};
+char *KEYWORDS[11] = {"int", "move", "to", "loop", "times", "out", "newline", "add", "sub", "[", "]"};
 
 char IdentifierNameList[100][20] = {"temp"};
 int identifierOrder = 0;
@@ -38,18 +38,18 @@ int substring(char *source, int from, int n, char *target)
 
 void isValidEnd(char lastChar)
 {
-    // eğer en sonda nokta yoksa hatali statement
+    // eger en sonda nokta yoksa hatali statement
     if (lastChar != ENDOFLINE)
     {
         printf("%s", "satir '.' ile bitmiyor.");
-        exit(1);
+        exit(0);
     }
 }
 
 bool isKeyword(char *kelime)
 {
     bool flag = false;
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 11; i++)
     {
         if (strcmp(kelime, KEYWORDS[i]) == 0)
         {
@@ -79,8 +79,8 @@ bool isCloseBlock(char karakter)
     return karakter == CLOSEBLOCK ? true : false;
 }
 
-bool isValidCodeBlock(char *satir,int anlik_satir,char *satirlar){
-    
+bool isValidCodeBlock(char *satir, int anlik_satir, char *satirlar)
+{
 }
 
 bool isStringConstant(char *karakter)
@@ -88,7 +88,7 @@ bool isStringConstant(char *karakter)
     return (karakter[0] == '"' && karakter[strlen(karakter) - 1] == '"') ? true : false;
 }
 
-//tam doğru değil,
+//tam dogru degil,
 bool isIntConstant(char *karakter)
 {
     int temp_int = *karakter;
@@ -130,7 +130,7 @@ bool isIdentifier(char *karakter, char *lastToken)
     }
 }
 
-//alt satıra sarkan yorum satırları sıkıntılı
+//alt satira sarkan yorum satirlari sikintili
 void deleteComments(char *satir)
 {
 
@@ -157,7 +157,7 @@ void deleteComments(char *satir)
     }
 }
 
-// hatalı, içte nokta varsa onu ayırıyor
+// hatali, icte nokta varsa onu ayiriyor
 void splitDot(char *satir)
 {
     int dotIndex = strcspn(satir, ".");
@@ -184,7 +184,7 @@ void splitComma(char *satir)
     }
 }
 
-int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yariyor
+int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyor
 {
 
     char *SourcefilePath = argv[1];
@@ -196,20 +196,20 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
     FILE *sourceFile = fopen(SourcefilePath, "r");
     if (sourceFile == NULL)
     {
-        printf("%s", "Dosya dizinde bulunamadi. Lütfen dizini kontrol edin.");
-        exit(1);
+        printf("%s", "Dosya dizinde bulunamadi. Lutfen dizini kontrol edin.");
+        exit(0);
     }
 
-    // yazılacak dosya
+    // yazilacak dosya
     FILE *destFile = fopen("myscript.lx", "w");
 
-    // satırları tek tek alan döngü
+    // satirlari tek tek alan dongu
     while (!feof(sourceFile))
     {
         fgets(satir, 150, sourceFile);
-        deleteComments(satir); //yorum bulunuyorsa satırda siliyor
-        splitDot(satir);       // sondaki yapışık noktaları da token alması için noktanın öncesine boşluk ekliyor
-        splitComma(satir);     // seperator olarak tanıması için virgülleri ayırıyor
+        deleteComments(satir); //yorum bulunuyorsa satirda siliyor
+        splitDot(satir);       // sondaki yapisik noktalari da token almasi icin noktanin oncesine bosluk ekliyor
+        splitComma(satir);     // seperator olarak tanimasi icin virgulleri ayiriyor
         strcpy(satirlar[satir_sayisi], satir);
         satir_sayisi++;
     }
@@ -217,7 +217,7 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
     int anlik_satir = 0;
     char lastToken[] = "";
 
-    // satırları kelimelerine ayırıyor
+    // satirlari kelimelerine ayiriyor
     while (anlik_satir <= satir_sayisi)
     {
         const char ayirici[] = " ";
@@ -226,7 +226,9 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
 
         while (token != NULL)
         {
-            //int state kontrolü
+            
+            //int state kontrolu
+
             if (strcmp(token, "int") == 0)
             {
                 fprintf(destFile, "Keyword %s\n", token);
@@ -241,8 +243,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Identifier degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (isEndofline(*token))
@@ -252,12 +254,13 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Endofline degil.", token);
+                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
                 }
             }
 
-            //move state kontrolü
-            else if (strcmp(token, "move") == 0)
+            //move state kontrolu
+
+            if (strcmp(token, "move") == 0)
             {
                 fprintf(destFile, "Keyword %s\n", token);
                 strcpy(lastToken, token);
@@ -280,8 +283,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s IntConstant degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (strcmp(token, "to") == 0)
@@ -292,8 +295,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s 'to' anahtar kelimesine eşit değil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s 'to' anahtar kelimesine esit degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -304,8 +307,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Identifier degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
                 if (isEndofline(*token))
                 {
@@ -314,12 +317,13 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Endofline degil.", token);
+                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
                 }
             }
 
-            //add state kontrolü
-            else if (strcmp(token, "add") == 0)
+            //add state kontrolu
+
+            if (strcmp(token, "add") == 0)
             {
                 fprintf(destFile, "Keyword %s\n", token);
                 strcpy(lastToken, token);
@@ -342,8 +346,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s IntConstant degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (strcmp(token, "to") == 0)
@@ -354,8 +358,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s 'to' anahtar kelimesine eşit değil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s 'to' anahtar kelimesine esit degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -366,8 +370,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Identifier degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
                 if (isEndofline(*token))
                 {
@@ -376,12 +380,13 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Endofline degil.", token);
+                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
                 }
             }
 
-            //sub state kontrolü
-            else if (strcmp(token, "sub") == 0)
+            //sub state kontrolu
+
+            if (strcmp(token, "sub") == 0)
             {
                 fprintf(destFile, "Keyword %s\n", "sub");
                 strcpy(lastToken, token);
@@ -404,8 +409,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s IntConstant degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (strcmp(token, "from") == 0)
@@ -416,8 +421,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s 'from' anahtar kelimesi değil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s 'from' anahtar kelimesi degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -428,8 +433,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Identifier degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
                 if (isEndofline(*token))
                 {
@@ -438,12 +443,13 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Endofline degil.", token);
+                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
                 }
             }
 
-            //out state kontrolü
-            else if (strcmp(token, "out") == 0)
+            //out state kontrolu
+
+            if (strcmp(token, "out") == 0)
             {
 
                 fprintf(destFile, "Keyword %s\n", "out");
@@ -490,8 +496,8 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
 
                     else
                     {
-                        printf("Out gramerine aykiri girdi. %s", token);
-                        exit(1);
+                        printf("%i. satirda hata. Out gramerine aykiri girdi. %s\n", anlik_satir + 1, token);
+                        exit(0);
                     }
                 }
 
@@ -502,14 +508,16 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("%s Endofline degil.", token);
-                    exit(1);
+                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
             }
 
-            //loop state kontrolü
-            else if (strcmp(token, "loop") == 0)
+            //loop state kontrolu
+
+            if (strcmp(token, "loop") == 0)
             {
+
                 fprintf(destFile, "Keyword %s\n", "loop");
                 strcpy(lastToken, token);
                 token = strtok(NULL, ayirici);
@@ -531,39 +539,36 @@ int main(int argc, char *argv[]) //içteki şeyler cmd de parametre vermeye yari
                 }
                 else
                 {
-                    printf("Loop gramerine aykiri girdi. %s", token);
-                    exit(1);
+                    printf("%i. satirda hata. Loop gramerine aykiri girdi. %s\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
-                if (strcmp(token, "times"))
+                if (strcmp(token, "times")==0 || strcmp(token, "times\n")==0)
                 {
-                    fprintf(destFile, "Keyword %s\n", "loop");
+                    fprintf(destFile, "Keyword %s\n", "times");
                     strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
-                    printf("%s, times anahtar kelimesi degil.",token);
-                    exit(1);
+                    printf("%i. satirda hata. %s, times anahtar kelimesi degil.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
-                // line or code block
                 
-
-
-
             }
+            
+
             else
             {
-                //hatalı
-                printf("%s Geçerli bir keyword degil.", token);
-                exit(1);
+                //hatali
+                printf("%i. satirda hata. %s Gecerli bir keyword degil.\n", anlik_satir + 1, token);
+                exit(0);
             }
 
             // strcpy(lastToken, token);
             // token = strtok(NULL, ayirici);
         }
-
         /*
         while (token != NULL)
         {

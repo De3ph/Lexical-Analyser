@@ -1,4 +1,9 @@
 int size.
 int sum.
-move 5 to size.
+move 5 to size. {ignore me, I am a comment}
 out newline, "Sum:", sum.
+loop 10 times out "*".
+loop size times
+[ out size, newline.
+add size to sum.
+]
