@@ -167,12 +167,26 @@ void deleteComments(char *satir)
 // hatali, icte nokta varsa onu ayiriyor
 void splitDot(char *satir)
 {
+    static int satir_no = 1;
     int dotIndex = strcspn(satir, ".");
+    char *p = strchr(satir,'.');
+
     if (dotIndex == strlen(satir) - 2 || dotIndex == strlen(satir) - 1)
     {
         satir[dotIndex] = '\0';
         strcat(satir, " .");
     }
+    else
+    {
+        if (p == NULL)
+        {
+            return;
+        }
+        printf("%i. satirda hata. \'.\' dan sonra girdi olamaz.",satir_no);
+        exit(0);
+    }
+    satir_no++;
+    
 }
 
 void splitComma(char *satir)
@@ -605,58 +619,6 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
             // strcpy(lastToken, token);
             // token = strtok(NULL, ayirici);
         }
-        /*
-        while (token != NULL)
-        {
-            
-            if (isKeyword(token))
-            {
-                fprintf(destFile, "%s %s\n", "Keyword", token);
-            }
-            else if (isEndofline(*token))
-            {
-                fprintf(destFile, "%s\n", "Endofline");
-            }
-
-            else if (isSeperator(*token))
-            {
-                fprintf(destFile, "%s\n", "Seperator");
-            }
-
-            else if (isOpenBlock(*token))
-            {
-                fprintf(destFile, "%s\n", "OpenBlock");
-            }
-
-            else if (isCloseBlock(*token))
-            {
-                fprintf(destFile, "%s\n", "CloseBlock");
-            }
-
-            else if (isStringConstant(token))
-            {
-                fprintf(destFile, "%s %s\n", "String Constant", token);
-            }
-
-            else if (isIntConstant(token))
-            {
-                fprintf(destFile, "%s %s\n", "IntConstant", token);
-            }
-
-            else if (isIdentifier(token, lastToken))
-            {
-                fprintf(destFile, "%s %s\n", "Identifier", token);
-            }
-
-            else
-            {
-                fprintf(destFile, "%s\n", token);
-            }
-            
-            strcpy(lastToken, token);
-            token = strtok(NULL, ayirici);
-        }
-        */
         anlik_satir++;
     }
 

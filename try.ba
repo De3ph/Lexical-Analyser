@@ -1,6 +1,6 @@
 int size.
 int sum.
-move - 5 to size.
+move 5 to size.
 loop size times {ignore me, I am a comment}
 [ out size, newline.
 add size to sum.
