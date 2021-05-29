@@ -69,20 +69,6 @@ bool isSeperator(char *karakter)
     return strcmp(karakter, SEPERATOR) == 0 ? true : false;
 }
 
-bool isOpenBlock(char karakter)
-{
-    return karakter == OPENBLOCK ? true : false;
-}
-
-bool isCloseBlock(char karakter)
-{
-    return karakter == CLOSEBLOCK ? true : false;
-}
-
-bool isValidCodeBlock(char *satir, int anlik_satir, char *satirlar)
-{
-}
-
 bool isStringConstant(char *karakter)
 {
     return (karakter[0] == '"' && karakter[strlen(karakter) - 1] == '"') ? true : false;
@@ -91,8 +77,29 @@ bool isStringConstant(char *karakter)
 //tam dogru degil,
 bool isIntConstant(char *karakter)
 {
+    /*
     int temp_int = *karakter;
     return isdigit(temp_int) != 0 ? true : false;
+    */
+
+    int len = strlen(karakter);
+
+	if (len > 100) {
+		return false;
+	}
+
+	for (int i = 0; i < len; i++) {
+		if (i > 0) {
+			if (karakter[i] == '-' || len == 1) {
+				return false;
+			}
+		}
+		if (!(isdigit(karakter[i]) || karakter[i] == '-')) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 bool isInIdentifierList(char *kelime)
@@ -112,7 +119,7 @@ bool isIdentifier(char *karakter, char *lastToken)
 {
     bool isInList = isInIdentifierList(karakter);
     int first_letter = karakter[0];
-    bool isValid = ((strcmp(lastToken, "int") == 0 || strcmp(lastToken, "to") == 0 || strcmp(lastToken, "from") == 0 || strcmp(lastToken, "loop") == 0 || strcmp(lastToken, "add") == 0 || strcmp(lastToken, "out") == 0 || strcmp(lastToken, ",") == 0) && (strlen(karakter) <= 20) && (isalpha(first_letter) != 0)) ? true : false;
+    bool isValid = ((strcmp(lastToken, "int") == 0 || strcmp(lastToken, "to") == 0 || strcmp(lastToken, "from") == 0 || strcmp(lastToken, "loop") == 0 || strcmp(lastToken, "add") == 0 || strcmp(lastToken, "out") == 0 || strcmp(lastToken, ",") == 0) && (strlen(karakter) <= 20) && (isalpha(first_letter) != 0) && (isKeyword(karakter) == false) ) ? true : false;
     if (isInList)
     {
         return true;
@@ -187,7 +194,9 @@ void splitComma(char *satir)
 int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyor
 {
 
-    char *SourcefilePath = argv[1];
+    //char *SourcefilePath = argv[1];
+    char *SourcefilePath = "./try.ba";
+
     char satir[150];
     int satir_sayisi = 0;
     char satirlar[150][150];
@@ -226,7 +235,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
 
         while (token != NULL)
         {
-            
+
             //int state kontrolu
 
             if (strcmp(token, "int") == 0)
@@ -543,7 +552,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                     exit(0);
                 }
 
-                if (strcmp(token, "times")==0 || strcmp(token, "times\n")==0)
+                if (strcmp(token, "times") == 0 || strcmp(token, "times\n") == 0)
                 {
                     fprintf(destFile, "Keyword %s\n", "times");
                     strcpy(lastToken, token);
@@ -554,10 +563,37 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                     printf("%i. satirda hata. %s, times anahtar kelimesi degil.\n", anlik_satir + 1, token);
                     exit(0);
                 }
-
-                
+                continue;
             }
-            
+
+            if (strcmp(token, "[\n") == 0 || strcmp(token, "[") == 0)
+            {
+                bool isFound = false;
+                while (isFound != true)
+                {
+                    for (int i = anlik_satir; i < satir_sayisi; i++)
+                    {
+                        if (strchr(satirlar[i], ']') != NULL)
+                        {
+                            isFound = true;
+                            break;
+                        }
+                    }
+                }
+                if (isFound)
+                {
+                    fprintf(destFile, "Open Block\n");
+                    strcpy(lastToken, token);
+                    token = strtok(NULL, ayirici);
+                }
+                continue;
+            }
+            if (strcmp(token, "]") == 0 || strcmp(token, "]\n") == 0)
+            {
+                fprintf(destFile, "CloseBlock\n");
+                strcpy(lastToken, token);
+                token = strtok(NULL, ayirici);
+            }
 
             else
             {

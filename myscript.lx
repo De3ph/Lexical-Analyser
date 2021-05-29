@@ -1,0 +1,8 @@
+Keyword int
+Identifier size
+Endofline
+Keyword int
+Identifier sum
+Endofline
+Keyword move
+IntConstant -
