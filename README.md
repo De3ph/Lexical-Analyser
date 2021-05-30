@@ -13,6 +13,7 @@ Lines of Code:
   Point (‘.’) is the end of line character. Lines can contain keywords, brackets, variables and constants. Any number of spaces or comments can be used between these elements. A   program line can be divided between multiple text lines.
 
   A line of code is one of the following:
+  
 	• A variable declaration.
 	• An assignment statement.
 	• An addition statement.
