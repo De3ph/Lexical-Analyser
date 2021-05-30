@@ -53,21 +53,23 @@ An output list is a list of strings and integer values separated by commas.
 <list_element>→<int_value>|<string>| newline
 A string is any sequence of characters between two quotation marks.
 example: “Hello, this is a string!”
-Loop:
-loop <int_value> times <line>
-{OR}
-loop <int_value> times <code_block>
-A loop starts with the int_value and at each iteration decrements the value of int_value by one. If int_value is a variable, the value of the variable can be accessed and modified during the loop. After the loop the variable takes the value 0. The last iteration of the loop operates with the value 1.
-example:
-loop 10 times out “*”. {writes 10 stars on the screen}
-Code Block:
-A code block is a list of code lines between square brackets. A code block can be used in a loop, interchangeably with a single line of code. By using code blocks, loops may be nested within each other.
-example:
-int size.
-int sum.
-move 5 to size.
-loop size times
-[ out size, newline.
-add size to sum.
-]
-out newline, “Sum:”, sum.
+	
+	Loop:
+	loop <int_value> times <line>
+	{OR}
+	loop <int_value> times <code_block>
+	A loop starts with the int_value and at each iteration decrements the value of int_value by one. If int_value is a variable, the value of the variable can be accessed and 		modified during the loop. After the loop the variable takes the value 0. The last iteration of the loop operates with the value 1.
+	example:
+	loop 10 times out “*”. {writes 10 stars on the screen}
+		Code Block:
+		A code block is a list of code lines between square brackets. A code block can be used in a loop, interchangeably with a single line of code. 
+		By using code blocks, loops may be nested within each other. 
+		example:
+			int size.
+			int sum.
+			move 5 to size.
+			loop size times
+			[ out size, newline.
+			add size to sum.
+			]
+			out newline, “Sum:”, sum.
