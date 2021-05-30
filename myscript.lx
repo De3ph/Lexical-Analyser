@@ -12,28 +12,3 @@ Endofline
 Keyword loop
 Identifier size
 Keyword times
-Keyword loop
-Identifier size
-Keyword times
-Keyword out
-StringConstant "*"
-Endofline
-Open Block
-Keyword out
-Identifier size
-Seperator
-Keyword newline
-Endofline
-Keyword add
-Identifier size
-Keyword to
-Identifier sum
-Endofline
-CloseBlock
-Keyword out
-Keyword newline
-Seperator
-StringConstant "Sum:"
-Seperator
-Identifier sum
-Endofline

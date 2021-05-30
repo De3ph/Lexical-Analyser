@@ -140,7 +140,6 @@ bool isIdentifier(char *karakter, char *lastToken)
 //alt satira sarkan yorum satirlari sikintili
 void deleteComments(char *satir)
 {
-
     int index1 = strcspn(satir, "{");
     if (index1 + 2 > strlen(satir))
     {
@@ -182,7 +181,7 @@ void splitDot(char *satir)
         {
             return;
         }
-        printf("%i. satirda hata. \'.\' dan sonra girdi olamaz.",satir_no);
+        printf("Error at %i. line. Text found after \'.\' .",satir_no);
         exit(0);
     }
     satir_no++;
@@ -219,7 +218,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
     FILE *sourceFile = fopen(SourcefilePath, "r");
     if (sourceFile == NULL)
     {
-        printf("%s", "Dosya dizinde bulunamadi. Lutfen dizini kontrol edin.");
+        printf("%s", "File not found. Please check the file.");
         exit(0);
     }
 
@@ -266,7 +265,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -277,7 +276,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -306,7 +305,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -318,7 +317,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s 'to' anahtar kelimesine esit degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -330,7 +329,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
                     exit(0);
                 }
                 if (isEndofline(*token))
@@ -340,7 +339,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -369,7 +368,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -381,7 +380,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s 'to' anahtar kelimesine esit degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -393,7 +392,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
                     exit(0);
                 }
                 if (isEndofline(*token))
@@ -403,7 +402,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -432,7 +431,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s IntConstant degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -444,7 +443,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s 'from' anahtar kelimesi degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not equal to 'from' keyword.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -456,7 +455,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Identifier degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
                     exit(0);
                 }
                 if (isEndofline(*token))
@@ -466,7 +465,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -519,7 +518,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
 
                     else
                     {
-                        printf("%i. satirda hata. Out gramerine aykiri girdi. %s\n", anlik_satir + 1, token);
+                        printf("%Error found at i. . %s is against the grammer of Out State.\n", anlik_satir + 1, token);
                         exit(0);
                     }
                 }
@@ -531,7 +530,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s Endofline degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
                     exit(0);
                 }
             }
@@ -562,7 +561,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. Loop gramerine aykiri girdi. %s\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is against the State of Loop.\n", anlik_satir + 1, token);
                     exit(0);
                 }
 
@@ -574,7 +573,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%i. satirda hata. %s, times anahtar kelimesi degil.\n", anlik_satir + 1, token);
+                    printf("%Error found at i. . %s is not the 'times' keyword.\n", anlik_satir + 1, token);
                     exit(0);
                 }
                 continue;
@@ -612,12 +611,10 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
             else
             {
                 //hatali
-                printf("%i. satirda hata. %s Gecerli bir keyword degil.\n", anlik_satir + 1, token);
+                printf("%Error found at i. . %s is not valid keyword.\n", anlik_satir + 1, token);
                 exit(0);
             }
 
-            // strcpy(lastToken, token);
-            // token = strtok(NULL, ayirici);
         }
         anlik_satir++;
     }
