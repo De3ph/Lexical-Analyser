@@ -36,7 +36,8 @@ Data Types:
 	
   example: 
   
-	123113, -5, 0, -314159 are valid integer representations.
+	• 123113, -5, 0, -314159 are valid integer representations.
+	
 	• 3.14159 is not a valid integer (it is a real number)
 	• 3.0 is not a valid integer (decimal point should not be displayed)
 	• 3. is not a valid integer (decimal point should not be displayed)
