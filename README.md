@@ -9,7 +9,7 @@ The script file is assumed to have the extension .ba .
 
 	c:\> ba myscript
 
-Lines of Code: 
+### Lines of Code
   Point (‘.’) is the end of line character. Lines can contain keywords, brackets, variables and constants. Any number of spaces or comments can be used between these elements. A   program line can be divided between multiple text lines.
 
   A line of code is one of the following:
@@ -21,7 +21,7 @@ Lines of Code:
 	• An output statement.
 	• A loop statement.
 	
-Comments:
+### Comments
   Comments are written between curly braces { }
 
   example: 
@@ -29,7 +29,7 @@ Comments:
 	{this is a comment}{ and
 	this is a comment too}
 
-Data Types: 
+### Data Types
   The only data type for variables is the integer. Integer is a signed whole number that is represented as a decimal data type. 
   An integer can be as big as 100 decimal digits.
   Strings exist only as constants and are used in the out statements only.
@@ -45,7 +45,7 @@ Data Types:
 	• --5 is not a valid integer (only one minus sign allowed)
 	• +5 is not a valid integer (plus sign is not allowed)
 	
-Variables: 
+### Variables
   All variables should be declared as an integer. Variables must be declared before they are used. All variables are global (and static).
 
 	int <variable>.
@@ -57,27 +57,27 @@ Variables:
 	
   All variables are initialized with the value 0 at the time of creation.
   
-Assignment Statement:
+### Assignment Statement
 
 	move <int_value> to <variable>.
 	example: 
 	• move 25 to myVar. {assigns 25 to myVar}
 	• move myVar to yourVar. {assigns myVar to yourVar}
 	
-Addition statement:
+### Addition statement 
 
 	add <int_value> to <variable>.
 	Increments the variable by int_value.
 	example: 
 	• add 2 to sum . {The value of sum increases by 2}
 	
-Subtraction statement:
+### Subtraction statement 
 
 	sub <int_value> from <variable>.
 	example: 
 	• sub t from total. {The value of total decreases by t}
 	
-Output statement:
+### Output statement 
 
 out <out_list>.
 
@@ -96,7 +96,7 @@ An output list is a list of strings and integer values separated by commas.
 A string is any sequence of characters between two quotation marks.
 example: “Hello, this is a string!”
 	
-Loop:
+### Loop
 
 	loop <int_value> times <line>
 	
@@ -112,7 +112,7 @@ example:
 
 	• loop 10 times out “*”. {writes 10 stars on the screen}
 
-Code Block:
+### Code Block
   A code block is a list of code lines between square brackets. A code block can be used in a loop, interchangeably with a single line of code. 
   By using code blocks, loops may be nested within each other. 
   
@@ -122,3 +122,6 @@ Code Block:
 	[ out size, newline.
 	add size to sum.
 	]
+
+
+Developed by @De3ph and @yasbas1 for project of Programming Languages course giving by Ege University/Turkey
