@@ -163,7 +163,6 @@ void deleteComments(char *satir)
     }
 }
 
-// hatali, icte nokta varsa onu ayiriyor
 void splitDot(char *satir)
 {
     static int satir_no = 1;
@@ -207,8 +206,7 @@ void splitComma(char *satir)
 int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyor
 {
 
-    //char *SourcefilePath = argv[1];
-    char *SourcefilePath = "./try.ba";
+    char *SourcefilePath = argv[1];
 
     char satir[150];
     int satir_sayisi = 0;
