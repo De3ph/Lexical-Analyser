@@ -37,12 +37,12 @@ Data Types:
   example: 
   
 	123113, -5, 0, -314159 are valid integer representations.
-	3.14159 is not a valid integer (it is a real number)
-	3.0 is not a valid integer (decimal point should not be displayed)
-	3. is not a valid integer (decimal point should not be displayed)
-	- 5 is not a valid integer (there should be no blank between the minus sign and the first digit.
-	--5 is not a valid integer (only one minus sign allowed)
-	+5 is not a valid integer (plus sign is not allowed)
+	* 3.14159 is not a valid integer (it is a real number)
+	* 3.0 is not a valid integer (decimal point should not be displayed)
+	* 3. is not a valid integer (decimal point should not be displayed)
+	* - 5 is not a valid integer (there should be no blank between the minus sign and the first digit.
+	* --5 is not a valid integer (only one minus sign allowed)
+	* +5 is not a valid integer (plus sign is not allowed)
 	
 Variables: 
   All variables should be declared as an integer. Variables must be declared before they are used. All variables are global (and static).
@@ -59,24 +59,29 @@ Variables:
 Assignment Statement:
 
 	move <int_value> to <variable>.
-	example: move 25 to myVar. {assigns 25 to myVar}
-	move myVar to yourVar. {assigns myVar to yourVar}
+	example: 
+	* move 25 to myVar. {assigns 25 to myVar}
+	* move myVar to yourVar. {assigns myVar to yourVar}
 	
 Addition statement:
 
 	add <int_value> to <variable>.
 	Increments the variable by int_value.
-	example: add 2 to sum . {The value of sum increases by 2}
+	example: 
+	* add 2 to sum . {The value of sum increases by 2}
 	
 Subtraction statement:
 
 	sub <int_value> from <variable>.
-	example: sub t from total. {The value of total decreases by t}
-	Output statement:
+	example: 
+	* sub t from total. {The value of total decreases by t}
+	
+Output statement:
 
 out <out_list>.
 
-	example: out “The result is:”,sum.
+	example: 
+	* out “The result is:”,sum.
 	
 An integer value is either a variable or a constant.
 
@@ -104,7 +109,7 @@ Loop:
 
 example:
 
-	loop 10 times out “*”. {writes 10 stars on the screen}
+	* loop 10 times out “*”. {writes 10 stars on the screen}
 
 Code Block:
   A code block is a list of code lines between square brackets. A code block can be used in a loop, interchangeably with a single line of code. 
