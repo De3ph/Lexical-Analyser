@@ -1,6 +1,10 @@
+int size 
 int size.
+ink sum.
 int sum.
+move 5.2 to size.
 move 5 to size.
+add 3 to sum.
 loop size times {ignore me, I am a comment}
 [ out size, newline.
 add size to sum.

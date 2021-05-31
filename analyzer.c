@@ -41,8 +41,7 @@ void isValidEnd(char lastChar)
     // eger en sonda nokta yoksa hatali statement
     if (lastChar != ENDOFLINE)
     {
-        printf("%s", "satir '.' ile bitmiyor.");
-        exit(0);
+        printf("%s", "satir '.' ile bitmiyor.\n");
     }
 }
 
@@ -84,22 +83,27 @@ bool isIntConstant(char *karakter)
 
     int len = strlen(karakter);
 
-	if (len > 100) {
-		return false;
-	}
+    if (len > 100)
+    {
+        return false;
+    }
 
-	for (int i = 0; i < len; i++) {
-		if (i > 0) {
-			if (karakter[i] == '-' || len == 1) {
-				return false;
-			}
-		}
-		if (!(isdigit(karakter[i]) || karakter[i] == '-')) {
-			return false;
-		}
-	}
+    for (int i = 0; i < len; i++)
+    {
+        if (i > 0)
+        {
+            if (karakter[i] == '-' || len == 1)
+            {
+                return false;
+            }
+        }
+        if (!(isdigit(karakter[i]) || karakter[i] == '-'))
+        {
+            return false;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 bool isInIdentifierList(char *kelime)
@@ -119,7 +123,7 @@ bool isIdentifier(char *karakter, char *lastToken)
 {
     bool isInList = isInIdentifierList(karakter);
     int first_letter = karakter[0];
-    bool isValid = ((strcmp(lastToken, "int") == 0 || strcmp(lastToken, "to") == 0 || strcmp(lastToken, "from") == 0 || strcmp(lastToken, "loop") == 0 || strcmp(lastToken, "add") == 0 || strcmp(lastToken, "out") == 0 || strcmp(lastToken, ",") == 0) && (strlen(karakter) <= 20) && (isalpha(first_letter) != 0) && (isKeyword(karakter) == false) ) ? true : false;
+    bool isValid = ((strcmp(lastToken, "int") == 0 || strcmp(lastToken, "to") == 0 || strcmp(lastToken, "from") == 0 || strcmp(lastToken, "loop") == 0 || strcmp(lastToken, "add") == 0 || strcmp(lastToken, "out") == 0 || strcmp(lastToken, ",") == 0) && (strlen(karakter) <= 20) && (isalpha(first_letter) != 0) && (isKeyword(karakter) == false)) ? true : false;
     if (isInList)
     {
         return true;
@@ -167,7 +171,7 @@ void splitDot(char *satir)
 {
     static int satir_no = 1;
     int dotIndex = strcspn(satir, ".");
-    char *p = strchr(satir,'.');
+    char *p = strchr(satir, '.');
 
     if (dotIndex == strlen(satir) - 2 || dotIndex == strlen(satir) - 1)
     {
@@ -180,11 +184,9 @@ void splitDot(char *satir)
         {
             return;
         }
-        printf("Error at %i. line. Text found after \'.\' .",satir_no);
-        exit(0);
+        printf("Error at %i. line. Text found after \'.\' .\n", satir_no);
     }
     satir_no++;
-    
 }
 
 void splitComma(char *satir)
@@ -216,8 +218,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
     FILE *sourceFile = fopen(SourcefilePath, "r");
     if (sourceFile == NULL)
     {
-        printf("%s", "File not found. Please check the file.");
-        exit(0);
+        printf("%s", "File not found. Please check the file.\n");
     }
 
     // yazilacak dosya
@@ -264,7 +265,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 else
                 {
                     printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    exit(0);
+                    break;
                 }
 
                 if (isEndofline(*token))
@@ -303,8 +304,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (strcmp(token, "to") == 0)
@@ -315,8 +316,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -327,8 +328,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
+                    break;
                 }
                 if (isEndofline(*token))
                 {
@@ -337,7 +338,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -366,8 +367,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (strcmp(token, "to") == 0)
@@ -378,8 +379,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -390,8 +391,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
+                    break;
                 }
                 if (isEndofline(*token))
                 {
@@ -400,7 +401,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -429,8 +430,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (strcmp(token, "from") == 0)
@@ -441,8 +442,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not equal to 'from' keyword.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not equal to 'from' keyword.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (isIdentifier(token, lastToken))
@@ -453,8 +454,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
+                    break;
                 }
                 if (isEndofline(*token))
                 {
@@ -463,7 +464,7 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
                 }
             }
 
@@ -516,8 +517,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
 
                     else
                     {
-                        printf("%Error found at i. . %s is against the grammer of Out State.\n", anlik_satir + 1, token);
-                        exit(0);
+                        printf("Error found at %i. . %s is against the grammer of Out State.\n", anlik_satir + 1, token);
+                        break;
                     }
                 }
 
@@ -528,8 +529,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not Endofline.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    break;
                 }
             }
 
@@ -559,8 +560,8 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is against the State of Loop.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is against the State of Loop.\n", anlik_satir + 1, token);
+                    break;
                 }
 
                 if (strcmp(token, "times") == 0 || strcmp(token, "times\n") == 0)
@@ -571,12 +572,13 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 else
                 {
-                    printf("%Error found at i. . %s is not the 'times' keyword.\n", anlik_satir + 1, token);
-                    exit(0);
+                    printf("Error found at %i. . %s is not the 'times' keyword.\n", anlik_satir + 1, token);
+                    break;
                 }
-                continue;
+                break;
             }
 
+            //OpenBlock
             if (strcmp(token, "[\n") == 0 || strcmp(token, "[") == 0)
             {
                 bool isFound = false;
@@ -597,8 +599,10 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                     strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
-                continue;
+                break;
             }
+
+            //CloseBlock
             if (strcmp(token, "]") == 0 || strcmp(token, "]\n") == 0)
             {
                 fprintf(destFile, "CloseBlock\n");
@@ -609,10 +613,9 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
             else
             {
                 //hatali
-                printf("%Error found at i. . %s is not valid keyword.\n", anlik_satir + 1, token);
-                exit(0);
+                printf("Error found at %i. . %s is not valid keyword.\n", anlik_satir + 1, token);
+                break;
             }
-
         }
         anlik_satir++;
     }
