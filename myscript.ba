@@ -1,12 +1,10 @@
-int size 
 int size.
-ink sum.
+add 5 to size.
 int sum.
-move 5.2 to size.
-move 5 to size.
-add 3 to sum.
-loop size times {ignore me, I am a comment}
-[ out size, newline.
 add size to sum.
-]
-out newline, "Sum:", sum.
+out "haha", newline.
+add 10 to size.
+int sum.
+move size to sum.
+out sum, newline.
+out size, newline, sum.

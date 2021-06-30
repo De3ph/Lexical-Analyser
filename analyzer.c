@@ -4,15 +4,45 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-const char ENDOFLINE = '.';
 const char SEPERATOR[] = "Seperator";
 const char OPENBLOCK = '[';
 const char CLOSEBLOCK = ']';
 
-char *KEYWORDS[11] = {"int", "move", "to", "loop", "times", "out", "newline", "add", "sub", "[", "]"};
+char *KEYWORDS[9] = {"int", "move", "to", "loop", "times", "out", "newline", "add", "sub"};
 
 char IdentifierNameList[100][20] = {"temp"};
-int identifierOrder = 0;
+int IdentifierNameListLength = 0;
+
+int IdentifierValueList[1000] = {0};
+int IdentifierValueOrder = 0;
+
+char satir[150];
+int satir_sayisi = 0;
+char satirlar[150][150];
+
+typedef struct node
+{
+    int intVal;
+    char *identNameVal;
+    char *strVal;
+} node;
+
+node create_node()
+{
+    node temp_node;
+    temp_node.intVal = -1000000;
+    temp_node.identNameVal = "none";
+    temp_node.strVal = "none";
+    return temp_node;
+}
+
+typedef struct out_list
+{
+    node list[200];
+} out_list;
+
+int out_list_order = 0;
+int out_list_start = 0;
 
 int substring(char *source, int from, int n, char *target)
 {
@@ -36,15 +66,6 @@ int substring(char *source, int from, int n, char *target)
     return 0;
 }
 
-void isValidEnd(char lastChar)
-{
-    // eger en sonda nokta yoksa hatali statement
-    if (lastChar != ENDOFLINE)
-    {
-        printf("%s", "satir '.' ile bitmiyor.\n");
-    }
-}
-
 bool isKeyword(char *kelime)
 {
     bool flag = false;
@@ -58,16 +79,12 @@ bool isKeyword(char *kelime)
     return flag;
 }
 
-bool isEndofline(char karakter)
-{
-    return karakter == ENDOFLINE ? true : false;
-}
-
 bool isSeperator(char *karakter)
 {
     return strcmp(karakter, SEPERATOR) == 0 ? true : false;
 }
 
+//hatalı
 bool isStringConstant(char *karakter)
 {
     return (karakter[0] == '"' && karakter[strlen(karakter) - 1] == '"') ? true : false;
@@ -119,26 +136,28 @@ bool isInIdentifierList(char *kelime)
     return flag;
 }
 
-bool isIdentifier(char *karakter, char *lastToken)
+bool isIdentifier(char *karakter)
 {
-    bool isInList = isInIdentifierList(karakter);
-    int first_letter = karakter[0];
-    bool isValid = ((strcmp(lastToken, "int") == 0 || strcmp(lastToken, "to") == 0 || strcmp(lastToken, "from") == 0 || strcmp(lastToken, "loop") == 0 || strcmp(lastToken, "add") == 0 || strcmp(lastToken, "out") == 0 || strcmp(lastToken, ",") == 0) && (strlen(karakter) <= 20) && (isalpha(first_letter) != 0) && (isKeyword(karakter) == false)) ? true : false;
-    if (isInList)
-    {
-        return true;
-    }
-    else if (isValid)
-    {
-        strcpy(IdentifierNameList[identifierOrder], karakter);
-        identifierOrder++;
-        return true;
-    }
+    int len = strlen(karakter);
 
-    else
+    if (len > 20)
     {
         return false;
     }
+
+    for (int i = 0; i < len; i++)
+    {
+        if (karakter[0] == '_')
+        {
+            return false;
+        }
+        if (!((karakter[i] >= 'a' && karakter[i] <= 'z') || (karakter[i] >= 'A' && karakter[i] <= 'Z') || (karakter[i] == '_')))
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 //alt satira sarkan yorum satirlari sikintili
@@ -167,29 +186,23 @@ void deleteComments(char *satir)
     }
 }
 
-void splitDot(char *satir)
+void renameDot(char *satir)
 {
-    static int satir_no = 1;
     int dotIndex = strcspn(satir, ".");
-    char *p = strchr(satir, '.');
-
-    if (dotIndex == strlen(satir) - 2 || dotIndex == strlen(satir) - 1)
+    while (dotIndex < strlen(satir))
     {
-        satir[dotIndex] = '\0';
-        strcat(satir, " .");
+        char first[dotIndex];
+        char second[strlen(satir) - dotIndex];
+        substring(satir, 0, dotIndex, first);
+        substring(satir, dotIndex + 1, strlen(satir) - 1, second);
+        strcat(first, " Endofline");
+        strcat(first, second);
+        strcpy(satir, first);
+        dotIndex = strcspn(satir, ".");
     }
-    else
-    {
-        if (p == NULL)
-        {
-            return;
-        }
-        printf("Error at %i. line. Text found after \'.\' .\n", satir_no);
-    }
-    satir_no++;
 }
 
-void splitComma(char *satir)
+void renameComma(char *satir)
 {
     int commaIndex = strcspn(satir, ",");
     while (commaIndex < strlen(satir))
@@ -204,267 +217,353 @@ void splitComma(char *satir)
         commaIndex = strcspn(satir, ",");
     }
 }
+    
 
-int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyor
+int insertTo(char *line , int pos)
 {
+	int len = 5;
+	for (int i = len; i > pos-1; i--)
+	{
+		strcpy(satirlar[i+1],satirlar[i]);
+	}
+	strcpy(satirlar[pos],line);
+}
 
-    char *SourcefilePath = argv[1];
-
-    char satir[150];
-    int satir_sayisi = 0;
-    char satirlar[150][150];
+int main() //icteki seyler cmd de parametre vermeye yariyor
+{
+    char fileName[] = "myscript.ba";
+    /*
+    printf("Enter the filename: \n");
+	scanf("%s", &fileName);
+    strcmp(fileName,".ba");
+    */
+    
 
     // okunacak dosya
-    FILE *sourceFile = fopen(SourcefilePath, "r");
+    FILE *sourceFile = fopen(fileName, "r");
     if (sourceFile == NULL)
     {
         printf("%s", "File not found. Please check the file.\n");
     }
-
-    // yazilacak dosya
-    FILE *destFile = fopen("myscript.lx", "w");
 
     // satirlari tek tek alan dongu
     while (!feof(sourceFile))
     {
         fgets(satir, 150, sourceFile);
         deleteComments(satir); //yorum bulunuyorsa satirda siliyor
-        splitDot(satir);       // sondaki yapisik noktalari da token almasi icin noktanin oncesine bosluk ekliyor
-        splitComma(satir);     // seperator olarak tanimasi icin virgulleri ayiriyor
+        renameComma(satir);    // seperator olarak tanimasi icin virgulleri ayiriyor
+        renameDot(satir);      // sondaki yapisik noktalari da token almasi icin noktanin oncesine bosluk ekliyor
         strcpy(satirlar[satir_sayisi], satir);
         satir_sayisi++;
     }
 
     int anlik_satir = 0;
-    char lastToken[] = "";
+    const char ayirici[] = " \n";
+    char *token;
 
     // satirlari kelimelerine ayiriyor
     while (anlik_satir <= satir_sayisi)
     {
-        const char ayirici[] = " ";
-
-        char *token = strtok(satirlar[anlik_satir], ayirici);
+        token = strtok(satirlar[anlik_satir], ayirici);
 
         while (token != NULL)
         {
 
             //int state kontrolu
-
             if (strcmp(token, "int") == 0)
             {
-                fprintf(destFile, "Keyword %s\n", token);
-                strcpy(lastToken, token);
+                char identName[20];
+
                 token = strtok(NULL, ayirici);
 
-                if (isIdentifier(token, lastToken))
+                if (isIdentifier(token))
                 {
-                    fprintf(destFile, "%s %s\n", "Identifier", token);
-                    strcpy(lastToken, token);
+                    strcpy(identName, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
-                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    break;
+                    printf("Error found at %i. . %s is not valid Identifier.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
 
-                if (isEndofline(*token))
+                if (strcmp(token, "Endofline") == 0)
                 {
-                    fprintf(destFile, "%s\n", "Endofline");
-                    break;
+                    token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    exit(0);
+                }
+
+                if (token == NULL)
+                {
+                    strcpy(IdentifierNameList[IdentifierNameListLength], identName);
+                    IdentifierNameListLength++;
+
+                    IdentifierValueList[IdentifierValueOrder] = 0;
+                    IdentifierValueOrder++;
+                    break;
+                }
+                else
+                {
+                    printf("Error found at %i, character found after Endofline.", anlik_satir + 1);
+                    exit(0);
                 }
             }
 
             //move state kontrolu
-
             if (strcmp(token, "move") == 0)
             {
-                fprintf(destFile, "Keyword %s\n", token);
-                strcpy(lastToken, token);
+                int srcInt = 0;
+                char destVal[20];
+
                 token = strtok(NULL, ayirici);
 
-                if (isIntConstant(token) || isIdentifier(token, lastToken))
+                if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
-                        fprintf(destFile, "IntConstant %s\n", token);
-                        strcpy(lastToken, token);
+                        srcInt = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
                     else
                     {
-                        fprintf(destFile, "Identifier %s\n", token);
-                        strcpy(lastToken, token);
+                        for (int i = 0; i < IdentifierValueOrder; i++)
+                        {
+                            if (!strcmp(token, IdentifierNameList[i]))
+                            {
+                                srcInt = IdentifierValueList[i];
+                                break;
+                            }
+                        }
+
                         token = strtok(NULL, ayirici);
                     }
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
                 if (strcmp(token, "to") == 0)
                 {
-                    fprintf(destFile, "Keyword %s\n", token);
-                    strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
-                if (isIdentifier(token, lastToken))
+                if (isIdentifier(token))
                 {
-                    fprintf(destFile, "Identifier %s\n", token);
-                    strcpy(lastToken, token);
+                    strcpy(destVal, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
-                if (isEndofline(*token))
+
+                if (strcmp(token, "Endofline") == 0)
                 {
-                    fprintf(destFile, "%s\n", "Endofline");
-                    break;
+                    token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    exit(0);
+                }
+                if (token == NULL)
+                {
+                    for (int i = 0; i < IdentifierValueOrder; i++)
+                    {
+                        if (!strcmp(destVal, IdentifierNameList[i]))
+                        {
+                            IdentifierValueList[i] = srcInt;
+                            break;
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    printf("Error found at %i, character found after Endofline.", anlik_satir + 1);
+                    exit(0);
                 }
             }
 
             //add state kontrolu
-
             if (strcmp(token, "add") == 0)
             {
-                fprintf(destFile, "Keyword %s\n", token);
-                strcpy(lastToken, token);
+                int srcInt = 0;
+                char destVal[20];
+
                 token = strtok(NULL, ayirici);
 
-                if (isIntConstant(token) || isIdentifier(token, lastToken))
+                if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
-                        fprintf(destFile, "IntConstant %s\n", token);
-                        strcpy(lastToken, token);
+                        srcInt = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
                     else
                     {
-                        fprintf(destFile, "Identifier %s\n", token);
-                        strcpy(lastToken, token);
+                        for (int i = 0; i < IdentifierValueOrder; i++)
+                        {
+                            if (!strcmp(token, IdentifierNameList[i]))
+                            {
+                                srcInt = IdentifierValueList[i];
+                                break;
+                            }
+                        }
+
                         token = strtok(NULL, ayirici);
                     }
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
                 if (strcmp(token, "to") == 0)
                 {
-                    fprintf(destFile, "Keyword %s\n", token);
-                    strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not equal to 'to' keyword.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
-                if (isIdentifier(token, lastToken))
+                if (isIdentifier(token))
                 {
-                    fprintf(destFile, "Identifier %s\n", token);
-                    strcpy(lastToken, token);
+                    strcpy(destVal, token);
+                    token = strtok(NULL, ayirici);
+                }
+
+                else
+                {
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
+                    exit(0);
+                }
+
+                if (strcmp(token, "Endofline") == 0)
+                {
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
-                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    break;
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
-                if (isEndofline(*token))
+
+                if (token == NULL)
                 {
-                    fprintf(destFile, "%s\n", "Endofline");
+                    for (int i = 0; i < IdentifierValueOrder; i++)
+                    {
+                        if (!strcmp(destVal, IdentifierNameList[i]))
+                        {
+                            IdentifierValueList[i] += srcInt;
+                            break;
+                        }
+                    }
                     break;
                 }
                 else
                 {
-                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    printf("Error found at %i, character found after Endofline.", anlik_satir + 1);
+                    exit(0);
                 }
             }
 
             //sub state kontrolu
-
             if (strcmp(token, "sub") == 0)
             {
-                fprintf(destFile, "Keyword %s\n", "sub");
-                strcpy(lastToken, token);
-                token = strtok(NULL, ayirici);
+                int srcInt = 0;
+                char destVal[20];
 
-                if (isIntConstant(token) || isIdentifier(token, lastToken))
+                if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
-                        fprintf(destFile, "IntConstant %s\n", token);
-                        strcpy(lastToken, token);
+                        srcInt = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
                     else
                     {
-                        fprintf(destFile, "Identifier %s\n", token);
-                        strcpy(lastToken, token);
+                        for (int i = 0; i < IdentifierValueOrder; i++)
+                        {
+                            if (!strcmp(token, IdentifierNameList[i]))
+                            {
+                                srcInt = IdentifierValueList[i];
+                                break;
+                            }
+                        }
+
                         token = strtok(NULL, ayirici);
                     }
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not IntConstant.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
                 if (strcmp(token, "from") == 0)
                 {
-                    fprintf(destFile, "Keyword %s\n", "from");
-                    strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not equal to 'from' keyword.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
-                if (isIdentifier(token, lastToken))
+                if (isIdentifier(token))
                 {
-                    fprintf(destFile, "Identifier %s\n", token);
-                    strcpy(lastToken, token);
+                    strcpy(destVal, token);
+                    token = strtok(NULL, ayirici);
+                }
+
+                else
+                {
+                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
+                    exit(0);
+                }
+
+                if (strcmp(token, "Endofline") == 0)
+                {
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
-                    printf("Error found at %i. . %s is not Identifier.\n", anlik_satir + 1, token);
-                    break;
+                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    exit(0);
                 }
-                if (isEndofline(*token))
+                if (token == NULL)
                 {
-                    fprintf(destFile, "%s\n", "Endofline");
+                    for (int i = 0; i < IdentifierValueOrder; i++)
+                    {
+                        if (!strcmp(destVal, IdentifierNameList[i]))
+                        {
+                            IdentifierValueList[i] -= srcInt;
+                            break;
+                        }
+                    }
+
                     break;
                 }
                 else
                 {
-                    printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    printf("Error found at %i, character found after Endofline.", anlik_satir + 1);
+                    exit(0);
                 }
             }
 
@@ -472,65 +571,100 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
 
             if (strcmp(token, "out") == 0)
             {
+                out_list print_list;
+                int IntStrCount = 0;
 
-                fprintf(destFile, "Keyword %s\n", "out");
-                strcpy(lastToken, token);
                 token = strtok(NULL, ayirici);
 
-                while (strcmp(token, ".") != 0)
+                while (!(strcmp(token, "Endofline") == 0))
                 {
+                    node temp_node = create_node();
 
-                    if (isIntConstant(token) || isIdentifier(token, lastToken))
+                    if (isIntConstant(token) || isIdentifier(token) || isStringConstant(token) || strcmp(token, "newline") == 0 || isSeperator(token))
                     {
                         if (isIntConstant(token))
                         {
-                            fprintf(destFile, "IntConstant %s\n", token);
-                            strcpy(lastToken, token);
+                            temp_node.intVal = atoi(token);
+                            print_list.list[out_list_order] = temp_node;
+                            out_list_order++;
                             token = strtok(NULL, ayirici);
+                            IntStrCount++;
+                        }
+                        else if (isSeperator(token))
+                        {
+                            token = strtok(NULL, ayirici);
+                        }
+                        else if (strcmp(token, "newline") == 0)
+                        {
+                            temp_node.strVal = "\n";
+                            print_list.list[out_list_order] = temp_node;
+                            out_list_order++;
+                            token = strtok(NULL, ayirici);
+                            IntStrCount++;
+                        }
+                        else if (isIdentifier(token))
+                        {
+                            temp_node.identNameVal = token;
+                            print_list.list[out_list_order] = temp_node;
+                            out_list_order++;
+                            token = strtok(NULL, ayirici);
+                        }
+                        else if (isStringConstant(token))
+                        {
+                            temp_node.strVal = token;
+                            print_list.list[out_list_order] = temp_node;
+                            out_list_order++;
+                            token = strtok(NULL, ayirici);
+                            IntStrCount++;
                         }
                         else
                         {
-                            fprintf(destFile, "Identifier %s\n", token);
-                            strcpy(lastToken, token);
-                            token = strtok(NULL, ayirici);
+                            printf("Error found at %i. . %s is against the grammer of Out State.\n", anlik_satir + 1, token);
+                            exit(0);
                         }
-                    }
-
-                    else if (isStringConstant(token))
-                    {
-                        fprintf(destFile, "StringConstant %s\n", token);
-                        strcpy(lastToken, token);
-                        token = strtok(NULL, ayirici);
-                    }
-                    else if (strcmp(token, "newline") == 0)
-                    {
-                        fprintf(destFile, "Keyword %s\n", token);
-                        strcpy(lastToken, token);
-                        token = strtok(NULL, ayirici);
-                    }
-                    else if (isSeperator(token))
-                    {
-                        fprintf(destFile, "Seperator\n");
-                        strcpy(lastToken, token);
-                        token = strtok(NULL, ayirici);
-                    }
-
-                    else
-                    {
-                        printf("Error found at %i. . %s is against the grammer of Out State.\n", anlik_satir + 1, token);
-                        break;
                     }
                 }
 
-                if (isEndofline(*token))
+                if (strcmp(token, "Endofline") == 0)
                 {
-                    fprintf(destFile, "%s\n", "Endofline");
-                    break;
+                    token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                    exit(0);
+                }
+                if (token == NULL)
+                {
+                    for (int i = out_list_start; i < out_list_order; ++i)
+                    {
+                        if (!(strcmp(print_list.list[i].identNameVal, "none") == 0))
+                        {
+                            for (int i = 0; i < IdentifierNameListLength; i++)
+                            {
+                                if (strcmp(print_list.list[i].identNameVal, IdentifierNameList[i]) == 0)
+                                {
+                                    printf("%i", IdentifierValueList[i - IntStrCount]);
+                                    break;
+                                }
+                            }
+                        }
+                        else if (!(strcmp(print_list.list[i].strVal, "none") == 0))
+                        {
+                            printf("%s", print_list.list[i].strVal);
+                        }
+                        else if (print_list.list[i].intVal != -1000000)
+                        {
+                            printf("%i", print_list.list[i].intVal);
+                        }
+                    }
+                    out_list_start = out_list_order;
                     break;
+                }
+                else
+                {
+                    printf("Error found at %i, character found after Endofline.", anlik_satir + 1);
+                    exit(0);
                 }
             }
 
@@ -538,49 +672,59 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
 
             if (strcmp(token, "loop") == 0)
             {
+                int loopTimes = 0;
+                char *loopTimesIdentifier;
+                int loopCount = 0;
 
-                fprintf(destFile, "Keyword %s\n", "loop");
-                strcpy(lastToken, token);
                 token = strtok(NULL, ayirici);
 
-                if (isIntConstant(token) || isIdentifier(token, lastToken))
+                if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
-                        fprintf(destFile, "IntConstant %s\n", token);
-                        strcpy(lastToken, token);
+                        loopTimes = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
                     else
                     {
-                        fprintf(destFile, "Identifier %s\n", token);
-                        strcpy(lastToken, token);
+                        loopTimesIdentifier = token;
+                        char *currentIdentName;
+
+                        for (int i = 0; i < IdentifierNameListLength; i++)
+                        {
+                            currentIdentName = IdentifierNameList[i];
+                            if (strcmp(loopTimesIdentifier, currentIdentName) == 0)
+                            {
+                                loopTimes = IdentifierValueList[i];
+                                break;
+                            }
+                        }
                         token = strtok(NULL, ayirici);
                     }
                 }
                 else
                 {
                     printf("Error found at %i. . %s is against the State of Loop.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
 
                 if (strcmp(token, "times") == 0 || strcmp(token, "times\n") == 0)
                 {
-                    fprintf(destFile, "Keyword %s\n", "times");
-                    strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 else
                 {
                     printf("Error found at %i. . %s is not the 'times' keyword.\n", anlik_satir + 1, token);
-                    break;
+                    exit(0);
                 }
-                break;
+                
             }
 
             //OpenBlock
+
             if (strcmp(token, "[\n") == 0 || strcmp(token, "[") == 0)
             {
+                //hatalı
                 bool isFound = false;
                 while (isFound != true)
                 {
@@ -595,32 +739,28 @@ int main(int argc, char *argv[]) //icteki seyler cmd de parametre vermeye yariyo
                 }
                 if (isFound)
                 {
-                    fprintf(destFile, "Open Block\n");
-                    strcpy(lastToken, token);
                     token = strtok(NULL, ayirici);
                 }
                 break;
             }
 
             //CloseBlock
+
             if (strcmp(token, "]") == 0 || strcmp(token, "]\n") == 0)
             {
-                fprintf(destFile, "CloseBlock\n");
-                strcpy(lastToken, token);
                 token = strtok(NULL, ayirici);
             }
 
             else
             {
                 //hatali
-                printf("Error found at %i. . %s is not valid keyword.\n", anlik_satir + 1, token);
-                break;
+                printf("Error found at %i. . %s is not valid keyword.\n", anlik_satir, token);
+                exit(0);
             }
         }
         anlik_satir++;
     }
 
     fclose(sourceFile);
-    fclose(destFile);
     return 0;
 }
