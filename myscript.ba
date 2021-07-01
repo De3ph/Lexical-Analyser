@@ -1,10 +1,12 @@
 int size.
+loop 2 times out "*", newline.
+int kral.
 add 5 to size.
 int sum.
 add size to sum.
 out "haha", newline.
 add 10 to size.
-int sum.
 move size to sum.
+add 1 to sum.
 out sum, newline.
 out size, newline, sum.

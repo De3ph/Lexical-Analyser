@@ -20,6 +20,9 @@ char satir[150];
 int satir_sayisi = 0;
 char satirlar[150][150];
 
+char codeBlockLines[150][150];
+int codeBlockLineOrder = 0;
+
 typedef struct node
 {
     int intVal;
@@ -217,16 +220,16 @@ void renameComma(char *satir)
         commaIndex = strcspn(satir, ",");
     }
 }
-    
 
-int insertTo(char *line , int pos)
+int insertTo(char *line, int pos)
 {
-	int len = 5;
-	for (int i = len; i > pos-1; i--)
-	{
-		strcpy(satirlar[i+1],satirlar[i]);
-	}
-	strcpy(satirlar[pos],line);
+    int len = satir_sayisi;
+    for (int i = len; i >= pos; i--)
+    {
+        strcpy(satirlar[i + 1], satirlar[i]);
+    }
+    strcpy(satirlar[pos], line);
+    satir_sayisi++;
 }
 
 int main() //icteki seyler cmd de parametre vermeye yariyor
@@ -237,7 +240,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 	scanf("%s", &fileName);
     strcmp(fileName,".ba");
     */
-    
 
     // okunacak dosya
     FILE *sourceFile = fopen(fileName, "r");
@@ -261,9 +263,12 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
     const char ayirici[] = " \n";
     char *token;
 
+    out_list print_list;
+
     // satirlari kelimelerine ayiriyor
     while (anlik_satir <= satir_sayisi)
     {
+
         token = strtok(satirlar[anlik_satir], ayirici);
 
         while (token != NULL)
@@ -299,12 +304,22 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
                 if (token == NULL)
                 {
-                    strcpy(IdentifierNameList[IdentifierNameListLength], identName);
-                    IdentifierNameListLength++;
+                    bool isDeclared = isInIdentifierList(identName);
 
-                    IdentifierValueList[IdentifierValueOrder] = 0;
-                    IdentifierValueOrder++;
-                    break;
+                    if (isDeclared)
+                    {
+                        printf("Variable already declared.");
+                        exit(0);
+                    }
+                    else
+                    {
+                        strcpy(IdentifierNameList[IdentifierNameListLength], identName);
+                        IdentifierNameListLength++;
+
+                        IdentifierValueList[IdentifierValueOrder] = 0;
+                        IdentifierValueOrder++;
+                        break;
+                    }
                 }
                 else
                 {
@@ -571,9 +586,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
             if (strcmp(token, "out") == 0)
             {
-                out_list print_list;
-                int IntStrCount = 0;
-
                 token = strtok(NULL, ayirici);
 
                 while (!(strcmp(token, "Endofline") == 0))
@@ -588,7 +600,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                             print_list.list[out_list_order] = temp_node;
                             out_list_order++;
                             token = strtok(NULL, ayirici);
-                            IntStrCount++;
                         }
                         else if (isSeperator(token))
                         {
@@ -600,7 +611,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                             print_list.list[out_list_order] = temp_node;
                             out_list_order++;
                             token = strtok(NULL, ayirici);
-                            IntStrCount++;
                         }
                         else if (isIdentifier(token))
                         {
@@ -615,7 +625,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                             print_list.list[out_list_order] = temp_node;
                             out_list_order++;
                             token = strtok(NULL, ayirici);
-                            IntStrCount++;
                         }
                         else
                         {
@@ -636,15 +645,15 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 }
                 if (token == NULL)
                 {
-                    for (int i = out_list_start; i < out_list_order; ++i)
+                    for (int i = out_list_start; i < out_list_order; i++)
                     {
                         if (!(strcmp(print_list.list[i].identNameVal, "none") == 0))
                         {
-                            for (int i = 0; i < IdentifierNameListLength; i++)
+                            for (int j = 0; j < IdentifierNameListLength; j++)
                             {
-                                if (strcmp(print_list.list[i].identNameVal, IdentifierNameList[i]) == 0)
+                                if (strcmp(print_list.list[i].identNameVal, IdentifierNameList[j]) == 0)
                                 {
-                                    printf("%i", IdentifierValueList[i - IntStrCount]);
+                                    printf("%i", IdentifierValueList[j]);
                                     break;
                                 }
                             }
@@ -672,9 +681,11 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
             if (strcmp(token, "loop") == 0)
             {
+                bool isCodeBlock = false;
                 int loopTimes = 0;
                 char *loopTimesIdentifier;
-                int loopCount = 0;
+                char newCode[150];
+                strcpy(newCode, "");
 
                 token = strtok(NULL, ayirici);
 
@@ -717,7 +728,41 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     printf("Error found at %i. . %s is not the 'times' keyword.\n", anlik_satir + 1, token);
                     exit(0);
                 }
-                
+                bool dotControl = false;
+                // kod bloğu açılmadan tek satırlı loop (myscript.ba 2. satırdaki gibi.)
+                if (token != NULL)
+                {
+                    while (token != NULL)
+                    {
+                        if (strcmp(token, "Endofline") == 0)
+                        {
+                            dotControl = true;
+                        }
+                        strcat(newCode, token);
+                        if (!dotControl)
+                        {
+                            strcat(newCode, " ");
+                        }
+                        token = strtok(NULL, ayirici);
+                    }
+                }
+
+                // kod bloğu varken
+
+                if (dotControl)
+                {
+                    if (!isCodeBlock)
+                    {
+                        for (int i = 0; i < loopTimes; i++)
+                        {
+                            insertTo(newCode, anlik_satir + 1);
+                        }
+                        break;
+                    }
+                }
+                else
+                {
+                }
             }
 
             //OpenBlock
