@@ -16,11 +16,11 @@ int IdentifierNameListLength = 0;
 int IdentifierValueList[1000] = {0};
 int IdentifierValueOrder = 0;
 
-char satir[150];
+char satir[500];
 int satir_sayisi = 0;
-char satirlar[150][150];
+char satirlar[500][500];
 
-char codeBlockLines[150][150];
+char codeBlockLines[500][500];
 int codeBlockLineOrder = 0;
 
 typedef struct node
@@ -93,14 +93,8 @@ bool isStringConstant(char *karakter)
     return (karakter[0] == '"' && karakter[strlen(karakter) - 1] == '"') ? true : false;
 }
 
-//tam dogru degil,
 bool isIntConstant(char *karakter)
 {
-    /*
-    int temp_int = *karakter;
-    return isdigit(temp_int) != 0 ? true : false;
-    */
-
     int len = strlen(karakter);
 
     if (len > 100)
@@ -208,16 +202,22 @@ void renameDot(char *satir)
 void renameComma(char *satir)
 {
     int commaIndex = strcspn(satir, ",");
+    //char first[commaIndex];
+    //char second[strlen(satir) - commaIndex];
+
+    char first[500];
+    char second[500];
+
     while (commaIndex < strlen(satir))
     {
-        char first[commaIndex];
-        char second[strlen(satir) - commaIndex];
         substring(satir, 0, commaIndex, first);
         substring(satir, commaIndex + 1, strlen(satir) - 1, second);
         strcat(first, " Seperator");
         strcat(first, second);
         strcpy(satir, first);
         commaIndex = strcspn(satir, ",");
+        strcpy(first, "");
+        strcpy(second, "");
     }
 }
 
@@ -251,7 +251,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
     // satirlari tek tek alan dongu
     while (!feof(sourceFile))
     {
-        fgets(satir, 150, sourceFile);
+        fgets(satir, 500, sourceFile);
         deleteComments(satir); //yorum bulunuyorsa satirda siliyor
         renameComma(satir);    // seperator olarak tanimasi icin virgulleri ayiriyor
         renameDot(satir);      // sondaki yapisik noktalari da token almasi icin noktanin oncesine bosluk ekliyor
@@ -681,10 +681,9 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
             if (strcmp(token, "loop") == 0)
             {
-                bool isCodeBlock = false;
                 int loopTimes = 0;
                 char *loopTimesIdentifier;
-                char newCode[150];
+                char newCode[500];
                 strcpy(newCode, "");
 
                 token = strtok(NULL, ayirici);
@@ -729,8 +728,11 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     exit(0);
                 }
                 bool dotControl = false;
+                char *checkCodeBlock;
+                substring(satirlar[anlik_satir + 1], 0, 1, checkCodeBlock);
+
                 // kod bloğu açılmadan tek satırlı loop (myscript.ba 2. satırdaki gibi.)
-                if (token != NULL)
+                if (token != NULL && !(strcmp(checkCodeBlock, "[\n") == 0 || strcmp(checkCodeBlock, "[") == 0))
                 {
                     while (token != NULL)
                     {
@@ -745,13 +747,8 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                         }
                         token = strtok(NULL, ayirici);
                     }
-                }
 
-                // kod bloğu varken
-
-                if (dotControl)
-                {
-                    if (!isCodeBlock)
+                    if (dotControl)
                     {
                         for (int i = 0; i < loopTimes; i++)
                         {
@@ -759,41 +756,81 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                         }
                         break;
                     }
+                    else
+                    {
+                        printf("Error found at %i. . %s is not Endofline.\n", anlik_satir + 1, token);
+                        exit(0);
+                    }
+                    strcpy(newCode, "");
+                }
+
+                // code block ise
+                else if (strcmp(checkCodeBlock, "[\n") == 0 || strcmp(checkCodeBlock, "[") == 0)
+                {
+                    anlik_satir++;
+                    token = strtok(satirlar[anlik_satir], ayirici);
+                    bool isFound = false;
+                    while (isFound != true)
+                    {
+                        for (int i = anlik_satir; i < satir_sayisi; i++)
+                        {
+                            if (strchr(satirlar[i], ']') != NULL)
+                            {
+                                isFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isFound)
+                    {
+                        token = strtok(NULL, ayirici);
+
+                        while (!strcmp(token, "]") == 0)
+                        {
+
+                            while (token != NULL)
+                            {
+                                if (strcmp(token, "Endofline") == 0)
+                                {
+                                    dotControl = true;
+                                }
+                                strcat(newCode, token);
+                                if (!dotControl)
+                                {
+                                    strcat(newCode, " ");
+                                }
+                                token = strtok(NULL, ayirici);
+                            }
+                            strcpy(codeBlockLines[codeBlockLineOrder], newCode);
+                            codeBlockLineOrder++;
+                            anlik_satir++;
+                            token = strtok(satirlar[anlik_satir], ayirici);
+                            strcpy(newCode, "");
+                            dotControl = false;
+                        }
+                        for (int i = 0; i < codeBlockLineOrder; i++)
+                        {
+                            for (int j = 0; j < loopTimes; j++)
+                            {
+                                insertTo(codeBlockLines[i],
+                                         (
+                                             anlik_satir + ((loopTimes * i) + j + 1)));
+                            }
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        printf("Unproper loop state.");
+                        exit(0);
+                    }
                 }
                 else
                 {
+                    printf("Unproper loop state.");
+                    exit(0);
                 }
-            }
-
-            //OpenBlock
-
-            if (strcmp(token, "[\n") == 0 || strcmp(token, "[") == 0)
-            {
-                //hatalı
-                bool isFound = false;
-                while (isFound != true)
-                {
-                    for (int i = anlik_satir; i < satir_sayisi; i++)
-                    {
-                        if (strchr(satirlar[i], ']') != NULL)
-                        {
-                            isFound = true;
-                            break;
-                        }
-                    }
-                }
-                if (isFound)
-                {
-                    token = strtok(NULL, ayirici);
-                }
-                break;
-            }
-
-            //CloseBlock
-
-            if (strcmp(token, "]") == 0 || strcmp(token, "]\n") == 0)
-            {
-                token = strtok(NULL, ayirici);
             }
 
             else

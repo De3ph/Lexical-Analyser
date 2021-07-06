@@ -1,5 +1,9 @@
 int size.
-loop 2 times out "*", newline.
+loop 2 times
+[ out ":)", newline.
+ out "(:", newline.
+]
+loop 3 times out "*", newline.
 int kral.
 add 5 to size.
 int sum.
@@ -9,4 +13,4 @@ add 10 to size.
 move size to sum.
 add 1 to sum.
 out sum, newline.
-out size, newline, sum.
+out "###", newline, size, newline, sum, newline, "###".
