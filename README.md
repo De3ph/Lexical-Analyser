@@ -1,4 +1,4 @@
-# Parser for BigAdd Language
+# Lexical-Analyzer-for-BigAdd
 
 BigAdd language is a small programming language that has been designed in order to add and subtract big integers programmatically and display the result on the screen. 
 BigAdd is an interpreted language. 
