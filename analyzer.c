@@ -25,6 +25,7 @@ int codeBlockLineOrder = 0;
 
 typedef struct node
 {
+    // out' ta yazılacakları tutmamızı sağlayan struct
     int intVal;
     char *identNameVal;
     char *strVal;
@@ -32,6 +33,7 @@ typedef struct node
 
 node create_node()
 {
+    // node oluşturucu
     node temp_node;
     temp_node.intVal = -1000000;
     temp_node.identNameVal = "none";
@@ -41,6 +43,7 @@ node create_node()
 
 typedef struct out_list
 {
+    // out state için yazdırılacak nodeları tutan yapı
     node list[200];
 } out_list;
 
@@ -57,11 +60,11 @@ int substring(char *source, int from, int n, char *target)
         printf("Starting index is invalid.\n");
         return 1;
     }
-    if ((from + n) > length)
+    if ((from + n) > length) // nereye kadar alınacağına bakıyor
     {
         n = (length - from);
     }
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; i++) // istenen başlangıçtan istenilen sona kadar substring alıyor, verilen hedefte depoluyor
     {
         target[i] = source[from + i];
     }
@@ -87,7 +90,6 @@ bool isSeperator(char *karakter)
     return strcmp(karakter, SEPERATOR) == 0 ? true : false;
 }
 
-//hatalı
 bool isStringConstant(char *karakter)
 {
     return (karakter[0] == '"' && karakter[strlen(karakter) - 1] == '"') ? true : false;
@@ -97,6 +99,7 @@ bool isIntConstant(char *karakter)
 {
     int len = strlen(karakter);
 
+    // karakterin integer limitleri içinde olup olmadığını kontrol ediyor, (limit dışındaysa double vs oluyor)
     if (len > 100)
     {
         return false;
@@ -119,7 +122,7 @@ bool isIntConstant(char *karakter)
 
     return true;
 }
-
+// değişkenin tanımlanıp tanımlanmadığını kontrol ediyor
 bool isInIdentifierList(char *kelime)
 {
     bool flag = false;
@@ -136,12 +139,13 @@ bool isInIdentifierList(char *kelime)
 bool isIdentifier(char *karakter)
 {
     int len = strlen(karakter);
-
+    // değişken adının uzunluğunu kontrol ediyor
     if (len > 20)
     {
         return false;
     }
 
+    //karakterlerin alphanumeric olup olmadığına bakıyor
     for (int i = 0; i < len; i++)
     {
         if (karakter[0] == '_')
@@ -157,17 +161,16 @@ bool isIdentifier(char *karakter)
     return true;
 }
 
-//alt satira sarkan yorum satirlari sikintili
 void deleteComments(char *satir)
 {
-    int index1 = strcspn(satir, "{");
+    int index1 = strcspn(satir, "{"); // { karakterden
     if (index1 + 2 > strlen(satir))
     {
         return;
     }
     else
     {
-        int index2 = strcspn(satir, "}");
+        int index2 = strcspn(satir, "}"); // } bu karaktere kadar olan şeyleri siliyor
         if (index2 + 2 > strlen(satir))
         {
             return;
@@ -192,7 +195,7 @@ void renameDot(char *satir)
         char second[strlen(satir) - dotIndex];
         substring(satir, 0, dotIndex, first);
         substring(satir, dotIndex + 1, strlen(satir) - 1, second);
-        strcat(first, " Endofline");
+        strcat(first, " Endofline"); // kontrol kolaylığı için noktaları değiştiriyor
         strcat(first, second);
         strcpy(satir, first);
         dotIndex = strcspn(satir, ".");
@@ -202,8 +205,6 @@ void renameDot(char *satir)
 void renameComma(char *satir)
 {
     int commaIndex = strcspn(satir, ",");
-    //char first[commaIndex];
-    //char second[strlen(satir) - commaIndex];
 
     char first[500];
     char second[500];
@@ -212,7 +213,7 @@ void renameComma(char *satir)
     {
         substring(satir, 0, commaIndex, first);
         substring(satir, commaIndex + 1, strlen(satir) - 1, second);
-        strcat(first, " Seperator");
+        strcat(first, " Seperator"); // kontrol kolaylığı için virgülleri değiştiriyor
         strcat(first, second);
         strcpy(satir, first);
         commaIndex = strcspn(satir, ",");
@@ -220,7 +221,7 @@ void renameComma(char *satir)
         strcpy(second, "");
     }
 }
-
+//satırların tutulduğu listeye, verilen indexine verilen satırı ekliyor
 int insertTo(char *line, int pos)
 {
     int len = satir_sayisi;
@@ -232,14 +233,13 @@ int insertTo(char *line, int pos)
     satir_sayisi++;
 }
 
-int main() //icteki seyler cmd de parametre vermeye yariyor
+int main()
 {
-    char fileName[] = "myscript.ba";
-    /*
+    char fileName[50];
+    
     printf("Enter the filename: \n");
 	scanf("%s", &fileName);
-    strcmp(fileName,".ba");
-    */
+    
 
     // okunacak dosya
     FILE *sourceFile = fopen(fileName, "r");
@@ -313,6 +313,10 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     }
                     else
                     {
+                        /*
+                            IdentifierNameList 'e identifier ismini ekliyor, IdentifierValueList 'e de 
+                            aynı index değerinin bulunduğu konuma 0 atamasını yapıyor
+                        */
                         strcpy(IdentifierNameList[IdentifierNameListLength], identName);
                         IdentifierNameListLength++;
 
@@ -335,11 +339,12 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 char destVal[20];
 
                 token = strtok(NULL, ayirici);
-
+                // atanacak değerin int mi variable mı olduğuna bakıyor
                 if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
+                        // int ise değeri direk srcInt e atıyor
                         srcInt = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
@@ -349,6 +354,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                         {
                             if (!strcmp(token, IdentifierNameList[i]))
                             {
+                                //değişken ise değerini IdentifierValueList ten bulup srcInt e atıyor
                                 srcInt = IdentifierValueList[i];
                                 break;
                             }
@@ -395,10 +401,15 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 }
                 if (token == NULL)
                 {
+                    // eğer noktadan sonra bir karakter yoksa state doğru oluyor
+
                     for (int i = 0; i < IdentifierValueOrder; i++)
                     {
                         if (!strcmp(destVal, IdentifierNameList[i]))
                         {
+                            /*
+                                IdentifierNameList den değişkenin index değerini bulup IdentifierValueList ' te değerini değiştiriyor
+                            */
                             IdentifierValueList[i] = srcInt;
                             break;
                         }
@@ -419,11 +430,12 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 char destVal[20];
 
                 token = strtok(NULL, ayirici);
-
+                // atanacak değerin int mi variable mı olduğuna bakıyor
                 if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
                     {
+                        //int ise değeri direk alıyor
                         srcInt = atoi(token);
                         token = strtok(NULL, ayirici);
                     }
@@ -431,6 +443,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     {
                         for (int i = 0; i < IdentifierValueOrder; i++)
                         {
+                            //değişken ise değerini IdentifierValueList ten bulup srcInt e atıyor
                             if (!strcmp(token, IdentifierNameList[i]))
                             {
                                 srcInt = IdentifierValueList[i];
@@ -485,6 +498,9 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     {
                         if (!strcmp(destVal, IdentifierNameList[i]))
                         {
+                            /*
+                                IdentifierNameList den değişkenin index değerini bulup IdentifierValueList ' te değerini srcInt kadar arttırıyor
+                            */
                             IdentifierValueList[i] += srcInt;
                             break;
                         }
@@ -499,6 +515,8 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
             }
 
             //sub state kontrolu
+
+            //add state ile aynı işlemler yapılıyor, sadece srcInt toplanmak yerine çıkartılıyor
             if (strcmp(token, "sub") == 0)
             {
                 int srcInt = 0;
@@ -590,39 +608,47 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
                 while (!(strcmp(token, "Endofline") == 0))
                 {
+                    // ekrana yazılacak bilgileri tutması için node oluşturuyor
                     node temp_node = create_node();
 
                     if (isIntConstant(token) || isIdentifier(token) || isStringConstant(token) || strcmp(token, "newline") == 0 || isSeperator(token))
                     {
+                        // yazdırılacak şeyin türünün tespiti yapılıyor
                         if (isIntConstant(token))
                         {
+                            // int ise node un int tutan intVal özelliğini verilen int yapıyor
                             temp_node.intVal = atoi(token);
-                            print_list.list[out_list_order] = temp_node;
+                            print_list.list[out_list_order] = temp_node; //yazılacaklar listesine ekliyor
                             out_list_order++;
                             token = strtok(NULL, ayirici);
                         }
+                        //virgül ise devam ediyor
                         else if (isSeperator(token))
                         {
                             token = strtok(NULL, ayirici);
                         }
+
                         else if (strcmp(token, "newline") == 0)
                         {
+                            //newline ise node un strVal özelliğine "\n" atıyor
                             temp_node.strVal = "\n";
-                            print_list.list[out_list_order] = temp_node;
+                            print_list.list[out_list_order] = temp_node; //yazılacaklar listesine ekliyor
                             out_list_order++;
                             token = strtok(NULL, ayirici);
                         }
                         else if (isIdentifier(token))
                         {
+                            // identifier yazılacak ise yazılacak identifier ın ismini identNameVal e atıyor
                             temp_node.identNameVal = token;
-                            print_list.list[out_list_order] = temp_node;
+                            print_list.list[out_list_order] = temp_node; //yazılacaklar listesine ekliyor
                             out_list_order++;
                             token = strtok(NULL, ayirici);
                         }
                         else if (isStringConstant(token))
                         {
+                            //StringConstant yazılacak ise strVal değerine StringConstant ı atıyor
                             temp_node.strVal = token;
-                            print_list.list[out_list_order] = temp_node;
+                            print_list.list[out_list_order] = temp_node; //yazılacaklar listesine ekliyor
                             out_list_order++;
                             token = strtok(NULL, ayirici);
                         }
@@ -645,12 +671,16 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 }
                 if (token == NULL)
                 {
+                    // yazılacaklar listesinde (print_list.list) dönüyor
                     for (int i = out_list_start; i < out_list_order; i++)
                     {
+                        //identNameVal özelliği değişmiş ise (identifier yazdırılacaksa)
                         if (!(strcmp(print_list.list[i].identNameVal, "none") == 0))
                         {
+                            //IdentifierNameList e identifier isminin indexini buluyor
                             for (int j = 0; j < IdentifierNameListLength; j++)
                             {
+                                // indexi bulunca IdentifierValueList ten değerini yazıyor
                                 if (strcmp(print_list.list[i].identNameVal, IdentifierNameList[j]) == 0)
                                 {
                                     printf("%i", IdentifierValueList[j]);
@@ -658,10 +688,12 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                                 }
                             }
                         }
+                        //strVal özelliği değişmiş ise (StrConstant yazdırılacaksa)
                         else if (!(strcmp(print_list.list[i].strVal, "none") == 0))
                         {
                             printf("%s", print_list.list[i].strVal);
                         }
+                        //intVal özelliği değişmiş ise (int yazdırılacaksa)
                         else if (print_list.list[i].intVal != -1000000)
                         {
                             printf("%i", print_list.list[i].intVal);
@@ -688,6 +720,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
                 token = strtok(NULL, ayirici);
 
+                //loop un kaç kere döneceğini alıyor
                 if (isIntConstant(token) || isIdentifier(token))
                 {
                     if (isIntConstant(token))
@@ -699,7 +732,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                     {
                         loopTimesIdentifier = token;
                         char *currentIdentName;
-
+                        // identifier değeri kadar dönecekse bulup loopTimes değişkenine atıyor
                         for (int i = 0; i < IdentifierNameListLength; i++)
                         {
                             currentIdentName = IdentifierNameList[i];
@@ -734,8 +767,10 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                 // kod bloğu açılmadan tek satırlı loop (myscript.ba 2. satırdaki gibi.)
                 if (token != NULL && !(strcmp(checkCodeBlock, "[\n") == 0 || strcmp(checkCodeBlock, "[") == 0))
                 {
+                    //times dan sonra bir şey gelmiş ise
                     while (token != NULL)
                     {
+                        // "." ya kadarki gerçekleştirikecek kodu newCode değişkenine kopyalıyor
                         if (strcmp(token, "Endofline") == 0)
                         {
                             dotControl = true;
@@ -750,6 +785,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
                     if (dotControl)
                     {
+                        //loop un dönüşü kadar dönecek kodu loop state in hemen sonrasına loopTimes kadar ekliyor
                         for (int i = 0; i < loopTimes; i++)
                         {
                             insertTo(newCode, anlik_satir + 1);
@@ -781,14 +817,14 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                             }
                         }
                     }
-
+                    // kod bloğunun kapanıp kapanmadığını kontrol ediyor
                     if (isFound)
                     {
                         token = strtok(NULL, ayirici);
 
                         while (!strcmp(token, "]") == 0)
                         {
-
+                            // kod satırı kapanana kadar [ ] arasındaki tüm satırları codeBlockLines listesine ekliyor
                             while (token != NULL)
                             {
                                 if (strcmp(token, "Endofline") == 0)
@@ -802,6 +838,7 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                                 }
                                 token = strtok(NULL, ayirici);
                             }
+                            //codeBlockLines a newCode ekleniyor
                             strcpy(codeBlockLines[codeBlockLineOrder], newCode);
                             codeBlockLineOrder++;
                             anlik_satir++;
@@ -809,8 +846,10 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
                             strcpy(newCode, "");
                             dotControl = false;
                         }
+                        //eklenecek satır sayısı kadar dönüyor
                         for (int i = 0; i < codeBlockLineOrder; i++)
                         {
+                            //loopTimes kadar eklenecek satırları ekliyor satırlar listesine
                             for (int j = 0; j < loopTimes; j++)
                             {
                                 insertTo(codeBlockLines[i],
@@ -835,7 +874,6 @@ int main() //icteki seyler cmd de parametre vermeye yariyor
 
             else
             {
-                //hatali
                 printf("Error found at %i. . %s is not valid keyword.\n", anlik_satir, token);
                 exit(0);
             }

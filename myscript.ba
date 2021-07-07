@@ -13,4 +13,4 @@ add 10 to size.
 move size to sum.
 add 1 to sum.
 out sum, newline.
-out "###", newline, size, newline, sum, newline, "###".
+out "Value:", 5, newline, size, newline, sum, newline, "###".
